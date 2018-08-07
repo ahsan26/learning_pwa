@@ -22,7 +22,7 @@ self.addEventListener('activate', e => {
         caches.keys()
             .then(keys => {
                 return Promise.all(keys.map(key => {
-                    if (key !== static_cache) {
+                    if (key !== static_cache && key !== dynaimcCache) {
                         return caches.delete(key);
                     }
                 }));
@@ -37,6 +37,12 @@ self.addEventListener('fetch', e => {
             .then(response => {
                 const clonedResponse = response.clone();
                 if (e.request.url.indexOf('https://api.github.com/users/') !== -1) {
+                    caches.open(dynaimcCache)
+                        .then(cache => {
+                            cache.put(e.request, clonedResponse);
+                        });
+                }
+                if (e.request.destination === 'image') {
                     caches.open(dynaimcCache)
                         .then(cache => {
                             cache.put(e.request, clonedResponse);
