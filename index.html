@@ -5,42 +5,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Class</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-        crossorigin="anonymous" />
-    <link rel="stylesheet" href="styles.css">
+    <title>Document</title>
 </head>
 
 <body>
-    <form action="JavaScript:void(0)">
-        <input type="text" name="id" id="userId" />
-        <button type="submit" onclick="showData()">Show</button>
-    </form>
-    <div id="data">
-        <table class="table table-hover">
-            <tbody>
-                <tr>
-                    <th scope="row">Name</th>
-                    <td id='name'></td>
-                </tr>
-                <tr>
-                    <th scope="row">Profile Picture</th>
-                    <td>
-                        <img id='profile_picture' src="" alt="user's profile">
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Repositries</th>
-                    <td id='respos'></td>
-                </tr>
-                <tr>
-                    <th scope="row">Followers</th>
-                    <td id='followers'></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <script src="app.js"></script>
+    <script>
+        var indexedDB = window.indexedDB;
+        var db;
+        var request = indexedDB.open('test', 2);
+        request.onerror = function (e) {
+            console.log('err', e);
+        }
+        request.onsuccess = function (e) {
+            console.log('success', e);
+            db = e.target.result;
+            addCustomer('ahsan', 'ahsan@abc.com');
+        }
+        request.onupgradeneeded = function (e) {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains('customers')) {
+                var objectStore = db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
+                objectStore.createIndex('title', 'title', { unique: false });
+            }
+        }
+        function addCustomer(name, email) {
+            let transaction = db.transaction('customers', 'readwrite')
+            let store = transaction.objectStore('customers');
+            console.log(store.autoIncrement);
+            var customer = {
+                title: 'title 1',
+                name: name,
+                email: email
+            };
+            var request = store.add(customer);
+            request.onsuccess = function (e) {
+                console.log('added the customer');
+            }
+            request.onerror = function (err) {
+                alert('err', err);
+            }
+        }
+
+        function showCustomers() {
+            let transaction = db.transaction('customers', 'readonly')
+            let store = transaction.objectStore('customers');
+            let data = store.getAll();
+            data.onsuccess = function () {
+                var result = data.result;
+                console.log(result)
+            }
+        }
+    </script>
 </body>
 
 </html>
