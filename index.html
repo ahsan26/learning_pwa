@@ -1,61 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
-
 <body>
-    <script>
-        var indexedDB = window.indexedDB;
-        var db;
-        var request = indexedDB.open('test', 2);
-        request.onerror = function (e) {
-            console.log('err', e);
-        }
-        request.onsuccess = function (e) {
-            console.log('success', e);
-            db = e.target.result;
-            addCustomer('ahsan', 'ahsan@abc.com');
-        }
-        request.onupgradeneeded = function (e) {
-            let db = e.target.result;
-            if (!db.objectStoreNames.contains('customers')) {
-                var objectStore = db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
-                objectStore.createIndex('title', 'title', { unique: false });
-            }
-        }
-        function addCustomer(name, email) {
-            let transaction = db.transaction('customers', 'readwrite')
-            let store = transaction.objectStore('customers');
-            console.log(store.autoIncrement);
-            var customer = {
-                title: 'title 1',
-                name: name,
-                email: email
-            };
-            var request = store.add(customer);
-            request.onsuccess = function (e) {
-                console.log('added the customer');
-            }
-            request.onerror = function (err) {
-                alert('err', err);
-            }
-        }
-
-        function showCustomers() {
-            let transaction = db.transaction('customers', 'readonly')
-            let store = transaction.objectStore('customers');
-            let data = store.getAll();
-            data.onsuccess = function () {
-                var result = data.result;
-                console.log(result)
-            }
-        }
-    </script>
+    <button id="btn">LOG</button>
+    <script src="app.js"></script>
 </body>
-
 </html>
