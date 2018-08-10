@@ -1,1 +1,1 @@
-# Github Profile Info Fetcher
+# IndexedDB
